@@ -1,0 +1,69 @@
+<model>
+    <mount>//OPNsense/gwactions</mount>
+    <version>1.0.0</version>
+    <description>Gateway Actions: run actions when a gateway changes state</description>
+    <items>
+        <general>
+            <enabled type="BooleanField">
+                <default>0</default>
+                <Required>Y</Required>
+            </enabled>
+        </general>
+        <rules>
+            <rule type="ArrayField">
+                <enabled type="BooleanField">
+                    <default>1</default>
+                    <Required>Y</Required>
+                </enabled>
+                <description type="TextField">
+                    <Required>Y</Required>
+                    <mask>/^[^"\\]{1,255}$/u</mask>
+                    <ValidationMessage>Provide a short description for this rule.</ValidationMessage>
+                </description>
+                <gateways type="TextField">
+                    <Required>Y</Required>
+                    <mask>/^[0-9a-zA-Z_.\-,]{1,2048}$/u</mask>
+                    <ValidationMessage>Select at least one gateway to watch.</ValidationMessage>
+                </gateways>
+                <trigger type="OptionField">
+                    <Required>Y</Required>
+                    <default>any</default>
+                    <OptionValues>
+                        <any>On any state change</any>
+                        <down>When it goes down</down>
+                        <up>When it comes up</up>
+                    </OptionValues>
+                </trigger>
+                <action type="OptionField">
+                    <Required>Y</Required>
+                    <default>wireguard_restart_all</default>
+                    <OptionValues>
+                        <wireguard_restart_all>Restart all WireGuard tunnels</wireguard_restart_all>
+                        <ipsec_restart>Restart IPsec</ipsec_restart>
+                        <unbound_restart>Restart Unbound (DNS)</unbound_restart>
+                        <flush_states>Flush firewall states</flush_states>
+                        <custom>Custom command / configd action</custom>
+                    </OptionValues>
+                </action>
+                <command type="TextField">
+                    <mask>/^.{0,1024}$/u</mask>
+                    <ValidationMessage>Invalid command.</ValidationMessage>
+                </command>
+                <delay type="IntegerField">
+                    <Required>Y</Required>
+                    <default>0</default>
+                    <MinimumValue>0</MinimumValue>
+                    <MaximumValue>600</MaximumValue>
+                    <ValidationMessage>Delay must be between 0 and 600 seconds.</ValidationMessage>
+                </delay>
+                <cooldown type="IntegerField">
+                    <Required>Y</Required>
+                    <default>30</default>
+                    <MinimumValue>0</MinimumValue>
+                    <MaximumValue>86400</MaximumValue>
+                    <ValidationMessage>Cooldown must be between 0 and 86400 seconds.</ValidationMessage>
+                </cooldown>
+            </rule>
+        </rules>
+    </items>
+</model>

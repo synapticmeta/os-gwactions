@@ -1,0 +1,50 @@
+<form>
+    <field>
+        <id>rule.enabled</id>
+        <label>Enabled</label>
+        <type>checkbox</type>
+    </field>
+    <field>
+        <id>rule.description</id>
+        <label>Description</label>
+        <type>text</type>
+        <help>A short name for this rule.</help>
+    </field>
+    <field>
+        <id>rule.gateways</id>
+        <label>Watched gateways</label>
+        <type>select_multiple</type>
+        <style>tokenize</style>
+        <allownew>false</allownew>
+        <help>Fire this rule when one of these gateways changes state. Pick your WAN gateways (e.g. VDSL, 5G).</help>
+    </field>
+    <field>
+        <id>rule.trigger</id>
+        <label>Trigger on</label>
+        <type>dropdown</type>
+        <help>Which transition fires the rule.</help>
+    </field>
+    <field>
+        <id>rule.action</id>
+        <label>Action</label>
+        <type>dropdown</type>
+    </field>
+    <field>
+        <id>rule.command</id>
+        <label>Custom command</label>
+        <type>text</type>
+        <help>Only used when Action = Custom. A configd action (e.g. "unbound restart"), or prefix with "cmd:" to run a shell command.</help>
+    </field>
+    <field>
+        <id>rule.delay</id>
+        <label>Delay (seconds)</label>
+        <type>text</type>
+        <help>Wait this many seconds after the transition before running the action — lets the new uplink settle first. 0 = immediate.</help>
+    </field>
+    <field>
+        <id>rule.cooldown</id>
+        <label>Cooldown (seconds)</label>
+        <type>text</type>
+        <help>Minimum seconds between two firings of this rule. Prevents restart storms when a flaky line flaps.</help>
+    </field>
+</form>

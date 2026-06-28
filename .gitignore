@@ -1,0 +1,14 @@
+# local / secrets - never commit
+secrets.local.md
+*.local
+.env
+
+# build artifacts
+dist/*.pkg
+dist/*.txz
+
+# python / macOS cruft
+__pycache__/
+*.pyc
+.DS_Store
+._*

@@ -1,0 +1,12 @@
+Gateway Actions for OPNsense
+
+Runs configurable actions (e.g. restart all WireGuard tunnels) when a gateway
+changes state. Built for multi-WAN failover setups where box-originated tunnels
+must re-establish over the new uplink after a failover or failback.
+
+Provides a Services GUI with a live status dashboard (gateway states, WireGuard
+handshakes, event history), a rule editor and a master enable switch. Rules match
+on watched gateways and a trigger (any / down / up), run a chosen action, and are
+rate-limited by a per-rule cooldown to avoid restart storms on a flapping line.
+
+WWW: https://github.com/synapticmeta/os-gwactions

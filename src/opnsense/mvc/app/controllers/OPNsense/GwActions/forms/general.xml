@@ -1,0 +1,8 @@
+<form>
+    <field>
+        <id>gwactions.general.enabled</id>
+        <label>Enable Gateway Actions</label>
+        <type>checkbox</type>
+        <help>Master switch. When disabled, no rules are evaluated on gateway changes.</help>
+    </field>
+</form>

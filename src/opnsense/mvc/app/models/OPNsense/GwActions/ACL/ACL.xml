@@ -1,0 +1,9 @@
+<acl>
+    <page-services-gatewayactions>
+        <name>Services: Gateway Actions</name>
+        <patterns>
+            <pattern>ui/gwactions*</pattern>
+            <pattern>api/gwactions/*</pattern>
+        </patterns>
+    </page-services-gatewayactions>
+</acl>

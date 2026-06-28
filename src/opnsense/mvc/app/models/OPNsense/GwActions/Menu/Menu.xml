@@ -1,0 +1,5 @@
+<menu>
+    <Services>
+        <GatewayActions order="900" VisibleName="Gateway Actions" cssClass="fa fa-random fa-fw" url="/ui/gwactions"/>
+    </Services>
+</menu>

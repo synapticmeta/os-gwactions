@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Gateway Actions monitor hook.
+#
+# OPNsense runs every script in rc.syshook.d/monitor/ when dpinger reports a
+# gateway transition, passing the comma separated list of affected gateways as
+# the first argument. We hand that straight to the gwactions engine.
+
+exec /usr/local/opnsense/scripts/OPNsense/GwActions/engine.py "$1"
