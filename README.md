@@ -17,9 +17,9 @@ Unbound (DNS), flush firewall states - or a custom command / configd action.
 ## Quick start
 ```sh
 # build on the OPNsense box (FreeBSD + pkg + python3):
-./build-pkg.sh 1.0.1
+./build-pkg.sh 1.0.2
 # install:
-pkg add -f dist/os-gwactions-1.0.1.pkg
+pkg add -f dist/os-gwactions-1.0.2.pkg
 ```
 Then create a rule (e.g. watch your WAN gateways -> *Restart all WireGuard*,
 cooldown 30s) and flip the master switch on.

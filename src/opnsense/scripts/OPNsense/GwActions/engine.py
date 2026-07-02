@@ -148,22 +148,45 @@ def handle_event(affected):
     os.makedirs(STATE_DIR, exist_ok=True)
     now = time.time()
 
+    # Only real up<->down transitions are actionable. dpinger also alarms on
+    # degraded flapping (none<->delay<->loss, which are all "up") -- a jittery
+    # mobile line would otherwise cause a restart storm. We remember each
+    # gateway's last up/down class and act only when it actually flips.
+    transitioned = {}  # gateway -> new state ("up"/"down"), only if it changed
+    for name in affected:
+        cur = "down" if "down" in statuses.get(name, "") else "up"
+        gwstate = os.path.join(STATE_DIR, "gwstate_" + name.replace("/", "_"))
+        prev = None
+        try:
+            with open(gwstate) as handle:
+                prev = handle.read().strip() or None
+        except Exception:
+            pass
+        try:
+            with open(gwstate, "w") as handle:
+                handle.write(cur)
+        except Exception:
+            pass
+        # first sighting is just a baseline (prev is None) -> not actionable
+        if prev is not None and prev != cur:
+            transitioned[name] = cur
+
     for rule in cfg.get("rules", []):
         if not rule.get("enabled", True):
             continue
         watch = set(rule.get("gateways", []))
-        hit = sorted(watch.intersection(affected))
+        hit = sorted(watch.intersection(transitioned.keys()))
         if not hit:
             continue
 
         trigger = rule.get("trigger", "any")
-        if trigger != "any":
-            def is_down(name):
-                return "down" in statuses.get(name, "")
-            if trigger == "down" and not any(is_down(g) for g in hit):
-                continue
-            if trigger == "up" and not any(not is_down(g) for g in hit):
-                continue
+        if trigger == "down":
+            hit = [g for g in hit if transitioned[g] == "down"]
+        elif trigger == "up":
+            hit = [g for g in hit if transitioned[g] == "up"]
+        # "any" keeps every real up<->down transition
+        if not hit:
+            continue
 
         rid = str(rule.get("uuid") or rule.get("name") or "rule").replace("/", "_")
         state_file = os.path.join(STATE_DIR, rid + ".last")
