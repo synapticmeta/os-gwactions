@@ -82,15 +82,31 @@ def load_config():
 
 
 def gateway_statuses():
-    """Return {gateway_name: status_string} from configctl."""
+    """Return {gateway_name: status_string} from configctl.
+
+    Up to 26.1 the output was {"items": [...]}; since 26.7 it is an object
+    keyed by gateway name. Both shapes are accepted.
+    """
     try:
         out = subprocess.run(
             [CONFIGCTL, "interface", "gateways", "status"],
             capture_output=True, text=True, timeout=15,
         ).stdout
         data = json.loads(out)
-        items = data.get("items") if isinstance(data, dict) else data
-        return {item["name"]: item.get("status", "") for item in (items or [])}
+        if isinstance(data, dict):
+            items = data.get("items")
+            if items is None:
+                items = list(data.values())
+        else:
+            items = data
+        statuses = {
+            item["name"]: item.get("status", "")
+            for item in (items or [])
+            if isinstance(item, dict) and item.get("name")
+        }
+        if not statuses:
+            _log("gwactions: gateway status lookup returned no gateways", syslog.LOG_ERR)
+        return statuses
     except Exception as exc:
         _log("gwactions: gateway status lookup failed: %s" % exc, syslog.LOG_ERR)
         return {}
@@ -154,7 +170,12 @@ def handle_event(affected):
     # gateway's last up/down class and act only when it actually flips.
     transitioned = {}  # gateway -> new state ("up"/"down"), only if it changed
     for name in affected:
-        cur = "down" if "down" in statuses.get(name, "") else "up"
+        # An unknown gateway must not be counted as "up": that would overwrite
+        # the stored state and hide every later transition.
+        if name not in statuses:
+            _log("gwactions: no status for gateway %s, skipped" % name, syslog.LOG_WARNING)
+            continue
+        cur = "down" if "down" in statuses[name] else "up"
         gwstate = os.path.join(STATE_DIR, "gwstate_" + name.replace("/", "_"))
         prev = None
         try:
